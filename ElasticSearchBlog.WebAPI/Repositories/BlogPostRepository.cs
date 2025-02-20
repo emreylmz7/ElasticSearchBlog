@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using ElasticSearchBlog.WebAPI.Models;
 
 namespace ElasticSearchBlog.WebAPI.Repositories;
@@ -79,4 +80,22 @@ public class BlogPostRepository : IBlogPostRepository
             await _client.CreateAsync(createRequest, cancellationToken);
         }
     }
+
+    public async Task<IEnumerable<BlogPost>> SearchAsync(string query, CancellationToken cancellationToken)
+    {
+        var searchRequest = new SearchRequest("blogposts")
+        {
+            Query = Query.MultiMatch(new MultiMatchQuery
+            {
+                Query = query,
+                Fields = new[] { "title", "content" } // Search in both title and content
+            }),
+            Size = 100 // Limit the number of results
+        };
+
+        var response = await _client.SearchAsync<BlogPost>(searchRequest, cancellationToken);
+        return response.Documents;
+    }
+
+
 }

@@ -79,5 +79,17 @@ public static class WebApplicationExtensions
             await repository.SeedDataAsync(cancellationToken);
             return Results.Ok("Data seeding completed.");
         });
+
+        // Search for blog posts by title or content
+        app.MapGet("/api/blogs/search", async (string query, IBlogPostRepository repository, CancellationToken cancellationToken) =>
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Results.BadRequest("Query parameter is required.");
+            }
+
+            var posts = await repository.SearchAsync(query, cancellationToken);
+            return Results.Ok(posts);
+        });
     }
 }

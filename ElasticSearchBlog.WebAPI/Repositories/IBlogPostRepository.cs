@@ -11,4 +11,5 @@ public interface IBlogPostRepository
     Task<UpdateResponse<BlogPost>> UpdateAsync(string id, BlogPost post, CancellationToken cancellationToken);
     Task<DeleteResponse> DeleteAsync(string id, CancellationToken cancellationToken);
     Task SeedDataAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<BlogPost>> SearchAsync(string query, CancellationToken cancellationToken);
 }
